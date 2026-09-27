@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Intelligent Project Operations Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#151A22;
+    --ink-2:#1E2530;
+    --ink-line: rgba(237,232,220,0.14);
+    --paper:#EDE8DC;
+    --paper-2:#E4DECE;
+    --line:#C9C2AE;
+    --text:#23262B;
+    --text-muted:#6B655A;
+    --accent:#8C5A2E;
+    --accent-dark:#6E4522;
+    --accent-ink:#F4EFE4;
+    --status-open:#6B7280;
+    --status-progress:#B8860B;
+    --status-done:#2F6F4E;
+    --status-blocked:#8B2E2E;
+    --sev-low:#6B7280;
+    --sev-medium:#B8860B;
+    --sev-high:#8B2E2E;
+    --serif:'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --display:'Playfair Display', Georgia, 'Times New Roman', serif;
+    --sans:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --radius:3px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    font-family:var(--sans);
+    color:var(--text);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+
+  a{ color:inherit; }
+  button{ font-family:inherit; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ---------- Masthead ---------- */
+  header.masthead{
+    background:var(--ink);
+    color:var(--accent-ink);
+    padding:28px clamp(20px,4vw,48px) 22px;
+  }
+  .masthead-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    max-width:1040px;
+    margin:0 auto;
+  }
+  .masthead-title{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(28px,3.6vw,38px);
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  .masthead-sub{
+    margin:8px 0 0;
+    font-size:14px;
+    line-height:1.5;
+    color:rgba(244,239,228,0.62);
+    max-width:48ch;
+  }
+  .project-field{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    align-items:flex-end;
+  }
+  .project-field label{
+    font-size:11px;
+    color:rgba(244,239,228,0.55);
+  }
+  .project-field input{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid rgba(244,239,228,0.4);
+    color:var(--accent-ink);
+    font-family:var(--serif);
+    font-size:18px;
+    padding:2px 2px 4px;
+    text-align:right;
+    min-width:220px;
+  }
+  .project-field input:focus{ border-bottom-color:var(--accent-ink); }
+
+  .masthead-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    margin-top:10px;
+  }
+  .masthead-actions .btn{
+    background:transparent;
+    border-color:rgba(244,239,228,0.35);
+    color:var(--accent-ink);
+    padding:6px 12px;
+    font-size:13px;
+  }
+  .masthead-actions .btn:hover{ background:rgba(244,239,228,0.1); border-color:rgba(244,239,228,0.6); }
+  .masthead-actions .btn.danger{ border-color:#C97A6D; color:#E3A79B; }
+  .masthead-actions .btn.danger:hover{ background:rgba(139,46,46,0.18); border-color:#E3A79B; }
+
+  .stat-strip{
+    max-width:1040px;
+    margin:20px auto 0;
+    display:flex;
+    gap:0;
+    border-top:1px solid var(--ink-line);
+    padding-top:14px;
+    flex-wrap:wrap;
+  }
+  .stat{
+    flex:1 1 130px;
+    padding:0 20px;
+    border-left:1px solid var(--ink-line);
+  }
+  .stat:first-child{ border-left:none; padding-left:0; }
+  .stat .num{
+    font-family:var(--serif);
+    font-size:26px;
+    font-weight:600;
+    display:block;
+  }
+  .stat .label{
+    font-size:12px;
+    color:rgba(244,239,228,0.55);
+  }
+
+  /* ---------- Nav ---------- */
+  nav.section-nav{
+    background:var(--paper-2);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  .section-nav ul{
+    list-style:none;
+    display:flex;
+    gap:28px;
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 clamp(20px,4vw,48px);
+    overflow-x:auto;
+  }
+  .section-nav li{ padding:14px 0; white-space:nowrap; }
+  .section-nav button{
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size:14px;
+    color:var(--text-muted);
+    padding-bottom:4px;
+    border-bottom:2px solid transparent;
+  }
+  .section-nav button.active{
+    color:var(--text);
+    border-bottom-color:var(--accent);
+    font-weight:500;
+  }
+
+  /* ---------- Main ---------- */
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:40px clamp(20px,4vw,48px) 80px;
+  }
+  section.view{ display:none; }
+  section.view.active{ display:block; }
+
+  h2.section-title{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:22px;
+    margin:0 0 4px;
+  }
+  p.section-desc{
+    color:var(--text-muted);
+    font-size:14px;
+    margin:0 0 24px;
+    max-width:70ch;
+  }
+
+  /* ---------- Dropzone ---------- */
+  .dropzone{
+    border:1px dashed var(--line);
+    background:rgba(255,255,255,0.35);
+    border-radius:var(--radius);
+    padding:28px;
+    text-align:center;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .dropzone.drag{ border-color:var(--accent); background:rgba(140,90,46,0.06); }
+  .dropzone p{ margin:0 0 12px; color:var(--text-muted); font-size:14px; }
+  .dropzone input[type=file]{ display:none; }
+
+  .btn{
+    font-family:var(--sans);
+    font-size:14px;
+    font-weight:500;
+    padding:9px 18px;
+    border-radius:var(--radius);
+    border:1px solid var(--accent);
+    background:var(--accent);
+    color:var(--accent-ink);
+    cursor:pointer;
+  }
+  .btn:hover{ background:var(--accent-dark); border-color:var(--accent-dark); }
+  .btn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn.ghost{ background:transparent; color:var(--accent); }
+  .btn.ghost:hover{ background:rgba(140,90,46,0.08); }
+  .btn.small{ padding:5px 12px; font-size:13px; }
+  .btn.reject{ border-color:var(--sev-high); color:var(--sev-high); background:transparent; }
+  .btn.reject:hover{ background:rgba(139,46,46,0.08); }
+
+  .upload-result{
+    margin-top:18px;
+    display:flex;
+    gap:0;
+    flex-wrap:wrap;
+    border-top:1px solid var(--line);
+    padding-top:14px;
+  }
+  .upload-result .stat{ border-left-color:var(--line); }
+  .upload-result .num{ color:var(--text); }
+  .upload-result .label{ color:var(--text-muted); }
+
+  /* ---------- Ledger (table-like list) ---------- */
+  .ledger{ border-top:1px solid var(--line); }
+  .ledger-row{
+    display:grid;
+    grid-template-columns:28px 1fr auto auto auto;
+    gap:16px;
+    align-items:start;
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .ledger-row .idx{ font-size:12px; color:var(--text-muted); padding-top:3px; }
+  .ledger-row .task{ font-size:14.5px; line-height:1.5; }
+  .ledger-row .task .snippet{
+    display:block;
+    margin-top:4px;
+    font-size:12.5px;
+    color:var(--text-muted);
+    font-style:italic;
+  }
+  .ledger-row .meta{ font-size:13px; color:var(--text-muted); white-space:nowrap; text-align:right; }
+  .ledger-row .meta .owner{ color:var(--text); display:block; }
+
+  .status{ display:inline-flex; align-items:center; gap:6px; font-size:13px; white-space:nowrap; }
+  .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; flex:none; }
+  .dot.open{ background:var(--status-open); }
+  .dot.in_progress{ background:var(--status-progress); }
+  .dot.done{ background:var(--status-done); }
+  .dot.blocked{ background:var(--status-blocked); }
+  .dot.low{ background:var(--sev-low); }
+  .dot.medium{ background:var(--sev-medium); }
+  .dot.high{ background:var(--sev-high); }
+
+  .pending-flag{
+    font-size:11.5px;
+    color:var(--accent);
+    border:1px solid var(--accent);
+    border-radius:var(--radius);
+    padding:1px 6px;
+    margin-left:6px;
+  }
+
+  .filters{ display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; align-items:flex-end; }
+  .field{ display:flex; flex-direction:column; gap:4px; }
+  .field label{ font-size:12px; color:var(--text-muted); }
+  .field select, .field input[type=text], .field input[type=password], .field input[type=number]{
+    font-family:var(--sans);
+    font-size:13.5px;
+    padding:7px 10px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:#fff;
+    min-width:160px;
+  }
+  .field input[type=number]{ min-width:80px; }
+  .field .hint{ font-size:12px; color:var(--text-muted); margin:4px 0 0; }
+
+  .request-row{
+    margin-top:22px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+  }
+  .request-row h3{ width:100%; font-family:var(--serif); font-size:15px; font-weight:600; margin:0 0 2px; }
+
+  .empty{
+    padding:32px 0;
+    color:var(--text-muted);
+    font-size:14px;
+    border-top:1px solid var(--line);
+  }
+  .empty strong{ display:block; color:var(--text); font-size:15px; margin-bottom:4px; font-weight:500; }
+
+  /* Two-column register (decisions/dependencies/open issues) */
+  .register-grid{ display:grid; grid-template-columns:1fr 1fr; gap:36px; }
+  @media (max-width:720px){ .register-grid{ grid-template-columns:1fr; } }
+  .register-grid h3{ font-family:var(--serif); font-size:16px; font-weight:600; margin:0 0 10px; }
+  .simple-row{ padding:11px 0; border-bottom:1px solid var(--line); font-size:13.5px; line-height:1.5; }
+  .simple-row .who{ display:block; color:var(--text-muted); font-size:12px; margin-top:3px; }
+
+  /* ---------- Q&A ---------- */
+  .qna-input{ display:flex; gap:10px; }
+  .qna-input input{
+    flex:1;
+    font-family:var(--sans);
+    font-size:15px;
+    padding:11px 14px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:#fff;
+  }
+  .answer-block{
+    margin-top:26px;
+    padding-top:22px;
+    border-top:1px solid var(--line);
+  }
+  .answer-block .q{
+    font-family:var(--serif);
+    font-size:17px;
+    margin:0 0 12px;
+  }
+  .answer-block .a{ font-size:14.5px; line-height:1.7; white-space:pre-wrap; }
+  .answer-block .a sup{ color:var(--accent); font-weight:600; }
+  .footnotes{ margin-top:20px; font-size:12.5px; color:var(--text-muted); }
+  .footnotes ol{ padding-left:18px; margin:8px 0 0; }
+  .footnotes li{ margin-bottom:8px; }
+  .footnotes .doc{ color:var(--text); font-weight:500; }
+
+  /* ---------- Weekly report ---------- */
+  .report-byline{ font-size:13px; color:var(--text-muted); margin-bottom:20px; }
+  .report-body h2{ font-family:var(--serif); font-size:18px; margin:26px 0 10px; }
+  .report-body h2:first-child{ margin-top:0; }
+  .report-body p{ font-size:14.5px; line-height:1.7; margin:0 0 12px; }
+  .report-body ul{ padding-left:20px; margin:0 0 12px; font-size:14.5px; line-height:1.7; }
+  .report-body{ border-top:1px solid var(--line); padding-top:22px; }
+
+  /* ---------- Approvals ---------- */
+  .approval-slip{
+    border:1px solid var(--line);
+    border-left:3px solid var(--accent);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:14px;
+    background:rgba(255,255,255,0.4);
+  }
+  .approval-slip .transition{ font-size:14.5px; margin:0 0 4px; }
+  .approval-slip .transition b{ font-family:var(--serif); }
+  .approval-slip .req-meta{ font-size:12.5px; color:var(--text-muted); margin:0 0 14px; }
+  .approval-slip .actions{ display:flex; gap:10px; align-items:center; }
+  .approval-slip input[type=text]{
+    font-size:13px;
+    padding:6px 9px;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:#fff;
+    width:120px;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:22px;
+    right:22px;
+    background:var(--ink);
+    color:var(--accent-ink);
+    padding:12px 18px;
+    border-radius:var(--radius);
+    font-size:13.5px;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .18s ease, transform .18s ease;
+    pointer-events:none;
+    max-width:320px;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); }
+  .toast.error{ background:var(--sev-high); }
+
+  .spinner-line{ font-size:13px; color:var(--text-muted); padding:20px 0; }
+
+  /* ---------- Modals ---------- */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(21,26,34,0.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background:var(--paper);
+    border-radius:var(--radius);
+    padding:26px 28px;
+    width:min(480px,92vw);
+    max-height:88vh;
+    overflow:auto;
+    box-shadow:0 12px 40px rgba(0,0,0,0.28);
+  }
+  .modal h3{ font-family:var(--serif); font-size:19px; font-weight:600; margin:0 0 6px; }
+  .modal .modal-desc{ font-size:13.5px; color:var(--text-muted); line-height:1.5; margin:0 0 18px; }
+  .modal .modal-desc strong{ color:var(--text); }
+  .modal .modal-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; }
+  .modal .modal-grid .field{ min-width:0; }
+  .modal .modal-grid .field select,
+  .modal .modal-grid .field input{ width:100%; min-width:0; }
+  @media (max-width:520px){ .modal .modal-grid{ grid-template-columns:1fr; } }
+  .modal .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:22px; }
+  .modal .field + .field{ margin-top:14px; }
+
+  .project-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
+
+  /* ---------- Report actions ---------- */
+  .report-actions{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+
+  /* ---------- Footer ---------- */
+  footer.site-footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:20px clamp(20px,4vw,48px) 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    border-top:1px solid var(--line);
+    font-size:13px;
+    color:var(--text-muted);
+  }
+  .footer-links{ display:flex; gap:16px; }
+  .footer-links a{ color:var(--text-muted); display:inline-flex; }
+  .footer-links a:hover{ color:var(--accent); }
+  .footer-links svg{ width:18px; height:18px; fill:currentColor; }
+  .api-base-btn{
+    display:block;
+    background:none;
+    border:none;
+    padding:0;
+    margin-top:2px;
+    font-family:inherit;
+    font-size:11.5px;
+    color:var(--text-muted);
+    opacity:0.7;
+    cursor:pointer;
+  }
+  .api-base-btn:hover{ opacity:1; color:var(--accent); }
+
+  @media print{
+    header.masthead, nav.section-nav, .toast, .report-actions, #generate-report-btn, footer.site-footer{ display:none !important; }
+    body{ background:#fff; }
+    main{ padding:0; max-width:none; }
+    .report-body{ border-top:none; padding-top:0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-top">
+    <div>
+      <h1 class="masthead-title">Intelligent Project Operations Assistant</h1>
+      <p class="masthead-sub">A structured record of every decision, risk, and commitment on the project extracted from uploaded documents</p>
+    </div>
+    <div class="project-field">
+      <label for="project-input">Project</label>
+      <input id="project-input" type="text" value="Untitled Project" />
+      <div class="masthead-actions">
+        <button class="btn small" id="open-settings-btn" type="button">⚙ Settings</button>
+        <button class="btn small" id="open-projects-btn" type="button">☰ Projects</button>
+        <button class="btn small danger" id="clear-project-btn" type="button">Clear data</button>
+      </div>
+    </div>
+  </div>
+  <div class="stat-strip" id="stat-strip">
+    <div class="stat"><span class="num" id="stat-open">—</span><span class="label">Open action items</span></div>
+    <div class="stat"><span class="num" id="stat-overdue">—</span><span class="label">Overdue</span></div>
+    <div class="stat"><span class="num" id="stat-risks">—</span><span class="label">Active risks</span></div>
+    <div class="stat"><span class="num" id="stat-pending">—</span><span class="label">Pending approvals</span></div>
+  </div>
+</header>
+
+<nav class="section-nav">
+  <ul id="nav-list">
+    <li><button data-view="upload" class="active">Upload</button></li>
+    <li><button data-view="action-items">Action items</button></li>
+    <li><button data-view="risks">Risks</button></li>
+    <li><button data-view="register">Decisions &amp; dependencies</button></li>
+    <li><button data-view="qna">Ask</button></li>
+    <li><button data-view="report">Weekly report</button></li>
+    <li><button data-view="approvals">Approvals</button></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- Upload -->
+  <section class="view active" id="view-upload">
+    <h2 class="section-title">Add documents</h2>
+    <p class="section-desc">Meeting notes, status reports, emails, and task lists in .txt, .pdf, or .docx. Each file is indexed for search and scanned for action items, risks, decisions, and dependencies. You may select/drop multiple files at once.</p>
+    <div class="dropzone" id="dropzone">
+      <p id="dropzone-text">Drop files here, or</p>
+      <button class="btn ghost" id="browse-btn" type="button">Choose files</button>
+      <input type="file" id="file-input" accept=".txt,.pdf,.docx,.md" multiple />
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn" id="ingest-btn" disabled>Upload documents</button>
+      <span id="selected-filename" style="margin-left:10px; font-size:13px; color:var(--text-muted);"></span>
+    </div>
+    <div class="upload-result" id="upload-result" style="display:none;"></div>
+  </section>
+
+  <!-- Action items -->
+  <section class="view" id="view-action-items">
+    <h2 class="section-title">Action items</h2>
+    <p class="section-desc">Every task extracted from your documents — owner, deadline, and priority, with the exact line it came from.</p>
+    <div class="filters">
+      <div class="field">
+        <label for="filter-status">Status</label>
+        <select id="filter-status">
+          <option value="">All</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In progress</option>
+          <option value="done">Done</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-owner">Owner</label>
+        <input type="text" id="filter-owner" placeholder="Exact name" />
+      </div>
+      <button class="btn ghost small" id="apply-filters">Apply</button>
+    </div>
+    <div class="ledger" id="action-items-ledger"></div>
+
+    <div class="request-row">
+      <h3>Propose a status change</h3>
+      <div class="field">
+        <label for="req-id">Item ID</label>
+        <input type="text" id="req-id" style="width:80px;" />
+      </div>
+      <div class="field">
+        <label for="req-status">New status</label>
+        <select id="req-status">
+          <option value="open">Open</option>
+          <option value="in_progress">In progress</option>
+          <option value="done">Done</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="req-by">Requested by</label>
+        <input type="text" id="req-by" value="you" style="width:120px;" />
+      </div>
+      <button class="btn small" id="submit-request">Submit for approval</button>
+    </div>
+  </section>
+
+  <!-- Risks -->
+  <section class="view" id="view-risks">
+    <h2 class="section-title">Risks</h2>
+    <p class="section-desc">Surfaced by a dedicated extraction pass — never buried inside a summary.</p>
+    <div class="ledger" id="risks-ledger"></div>
+  </section>
+
+  <!-- Decisions & Dependencies -->
+  <section class="view" id="view-register">
+    <h2 class="section-title">Decisions, dependencies &amp; open issues</h2>
+    <p class="section-desc">The project's record — what's been decided, what's blocking what, and what's still unresolved.</p>
+    <div class="register-grid">
+      <div>
+        <h3>Decisions</h3>
+        <div id="decisions-list"></div>
+        <h3 style="margin-top:28px;">Open issues</h3>
+        <div id="open-issues-list"></div>
+      </div>
+      <div>
+        <h3>Dependencies</h3>
+        <div id="dependencies-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q&A -->
+  <section class="view" id="view-qna">
+    <h2 class="section-title">Ask the project</h2>
+    <p class="section-desc">Answers are grounded in your uploaded documents and cited back to their source.</p>
+    <div class="qna-input">
+      <input type="text" id="qna-question" placeholder="e.g. What are the overdue action items?" />
+      <button class="btn" id="qna-ask">Ask</button>
+    </div>
+    <div id="qna-results"></div>
+  </section>
+
+  <!-- Weekly report -->
+  <section class="view" id="view-report">
+    <h2 class="section-title">Weekly status report</h2>
+    <p class="section-desc">Built from the structured record above — not a rehash of the raw notes.</p>
+    <button class="btn" id="generate-report-btn">Generate report</button>
+    <div class="report-actions" id="report-actions" style="display:none;">
+      <button class="btn ghost small" id="report-copy-btn" type="button">Copy</button>
+      <button class="btn ghost small" id="report-download-btn" type="button">Download .md</button>
+      <button class="btn ghost small" id="report-print-btn" type="button">Print / Save as PDF</button>
+    </div>
+    <div id="report-output"></div>
+  </section>
+
+  <!-- Approvals -->
+  <section class="view" id="view-approvals">
+    <h2 class="section-title">Pending approvals</h2>
+    <p class="section-desc">Nothing changes status on its own — every proposed change waits here for a human sign-off.</p>
+    <div id="approvals-list"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div>
+    <p>&copy; 2026 Yashasvi Jaiswal</p>
+    <button class="api-base-btn" id="api-base-btn" type="button">API: <span id="api-base-display"></span></button>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/yashjswl" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+      <svg viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.69-1.28-1.69-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.77.12 3.06.74.8 1.19 1.83 1.19 3.09 0 4.43-2.7 5.41-5.26 5.69.41.36.78 1.07.78 2.15 0 1.55-.01 2.8-.01 3.18 0 .3.21.66.8.55A10.52 10.52 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
+    </a>
+    <a href="https://www.linkedin.com/in/yashjswl/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27ZM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg>
+    </a>
+  </div>
+</footer>
+
+<!-- Backend connection modal -->
+<div class="modal-overlay" id="api-base-modal">
+  <div class="modal">
+    <h3>Backend connection</h3>
+    <p class="modal-desc">The web address of the FastAPI server this page talks to. Change this if the backend is hosted somewhere other than your machine.</p>
+    <div class="field">
+      <label for="api-base-input">Backend URL</label>
+      <input type="text" id="api-base-input" autocomplete="off" placeholder="http://localhost:8000" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost small" id="api-base-cancel" type="button">Cancel</button>
+      <button class="btn small" id="api-base-save" type="button">Save &amp; reload</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <h3>Settings</h3>
+    <p class="modal-desc">Stored locally on this machine — these override the server's <code>.env</code> defaults and never leave your computer.</p>
+    <div class="field">
+      <label for="set-provider">LLM provider</label>
+      <select id="set-provider">
+        <option value="groq">Groq</option>
+        <option value="gemini">Gemini</option>
+        <option value="ollama">Ollama (local)</option>
+      </select>
+      <p class="hint">Make sure the API key below is set for whichever provider you select.</p>
+    </div>
+    <div class="field">
+      <label for="set-groq-key">Groq API key</label>
+      <input type="text" id="set-groq-key" autocomplete="off" placeholder="gsk_..." />
+    </div>
+    <div class="field">
+      <label for="set-groq-model">Groq model</label>
+      <input type="text" id="set-groq-model" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="set-gemini-key">Gemini API key</label>
+      <input type="text" id="set-gemini-key" autocomplete="off" placeholder="AIza..." />
+    </div>
+    <div class="field">
+      <label for="set-gemini-model">Gemini model</label>
+      <input type="text" id="set-gemini-model" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="set-ollama-url">Ollama base URL</label>
+      <input type="text" id="set-ollama-url" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="set-ollama-model">Ollama model</label>
+      <input type="text" id="set-ollama-model" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="set-top-k">Answers per question (Q&amp;A retrieval)</label>
+      <input type="number" id="set-top-k" min="1" max="20" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost small" id="settings-cancel" type="button">Cancel</button>
+      <button class="btn small" id="settings-save" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Projects modal -->
+<div class="modal-overlay" id="projects-modal">
+  <div class="modal">
+    <h3>Projects</h3>
+    <p class="modal-desc">Switch back to an existing project, start a new one, or permanently delete one.</p>
+    <div class="field">
+      <label for="new-project-name">New project name</label>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="new-project-name" autocomplete="off" style="flex:1;" />
+        <button class="btn small" id="new-project-create" type="button">Create</button>
+      </div>
+    </div>
+    <div id="projects-list" style="margin-top:22px; border-top:1px solid var(--line); padding-top:14px;"></div>
+    <div class="modal-actions">
+      <button class="btn ghost small" id="projects-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Clear project data modal -->
+<div class="modal-overlay" id="clear-project-modal">
+  <div class="modal">
+    <h3>Clear project data</h3>
+    <p class="modal-desc">This permanently deletes ALL documents, action items, risks, decisions, dependencies, open issues, and pending approvals for <strong id="clear-project-name-display"></strong>. This cannot be undone.</p>
+    <div class="field">
+      <label for="clear-confirm-input">Type the project name to confirm</label>
+      <input type="text" id="clear-confirm-input" autocomplete="off" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost small" id="clear-project-cancel" type="button">Cancel</button>
+      <button class="btn small reject" id="clear-project-confirm" type="button" disabled>Delete permanently</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* API_BASE resolution order: ?api= query param (persisted), then a value
+   saved earlier via the footer's connection dialog, then localhost for
+   local development. This lets a statically-hosted build of this page
+   point at whatever backend URL it's given, e.g.
+   https://your-app.pages.dev/?api=https://your-backend.onrender.com */
+function resolveApiBase(){
+  const fromQuery = new URLSearchParams(window.location.search).get("api");
+  if(fromQuery){
+    try{ localStorage.setItem("apiBase", fromQuery); }catch(e){}
+    return fromQuery.replace(/\/$/, "");
+  }
+  try{
+    const stored = localStorage.getItem("apiBase");
+    if(stored) return stored.replace(/\/$/, "");
+  }catch(e){}
+  return "http://localhost:8000";
+}
+let API_BASE = resolveApiBase();
+
+function el(id){ return document.getElementById(id); }
+function esc(s){
+  if(s===null||s===undefined) return "";
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function showToast(msg, isError){
+  const t = el("toast");
+  t.textContent = msg;
+  t.className = "toast show" + (isError ? " error" : "");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => { t.className = "toast"; }, 3200);
+}
+function project(){ return el("project-input").value.trim() || "Untitled Project"; }
+
+async function api(path, opts){
+  try{
+    const resp = await fetch(API_BASE + path, opts);
+    if(!resp.ok){
+      const text = await resp.text().catch(() => "");
+      throw new Error(`${resp.status}: ${text || resp.statusText}`);
+    }
+    return await resp.json();
+  }catch(err){
+    showToast("Request failed — is the backend running at " + API_BASE + "? (" + err.message + ")", true);
+    throw err;
+  }
+}
+
+/* ---------- Modals ---------- */
+function openModal(id){ el(id).classList.add("open"); }
+function closeModal(id){ el(id).classList.remove("open"); }
+document.querySelectorAll(".modal-overlay").forEach(overlay => {
+  overlay.addEventListener("click", e => { if(e.target === overlay) closeModal(overlay.id); });
+});
+document.addEventListener("keydown", e => {
+  if(e.key !== "Escape") return;
+  const open = document.querySelectorAll(".modal-overlay.open");
+  if(open.length) closeModal(open[open.length - 1].id);
+});
+
+/* ---------- Navigation ---------- */
+const views = ["upload","action-items","risks","register","qna","report","approvals"];
+function setView(name){
+  views.forEach(v => {
+    el("view-" + v).classList.toggle("active", v === name);
+  });
+  document.querySelectorAll("#nav-list button").forEach(b => {
+    b.classList.toggle("active", b.dataset.view === name);
+  });
+  if(name === "action-items") loadActionItems();
+  if(name === "risks") loadRisks();
+  if(name === "register") loadRegister();
+  if(name === "approvals") loadApprovals();
+}
+document.querySelectorAll("#nav-list button").forEach(b => {
+  b.addEventListener("click", () => setView(b.dataset.view));
+});
+
+/* ---------- Overview stats ---------- */
+async function refreshStats(){
+  try{
+    const items = await api(`/projects/${encodeURIComponent(project())}/action-items`);
+    const risks = await api(`/projects/${encodeURIComponent(project())}/risks`);
+    const approvals = await api(`/approvals/pending`);
+    const open = items.filter(i => i.status !== "done").length;
+    const today = new Date();
+    const overdue = items.filter(i => {
+      if(i.status === "done" || !i.deadline) return false;
+      const d = new Date(i.deadline);
+      return !isNaN(d) && d < today;
+    }).length;
+    el("stat-open").textContent = open;
+    el("stat-overdue").textContent = overdue;
+    el("stat-risks").textContent = risks.length;
+    el("stat-pending").textContent = approvals.filter(a => a.action_item_id && !a.reviewed).length;
+  }catch(e){ /* toast already shown */ }
+}
+
+/* ---------- Upload ---------- */
+let selectedFiles = [];
+const dropzone = el("dropzone");
+const fileInput = el("file-input");
+
+el("browse-btn").addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", () => {
+  if(fileInput.files.length) setSelectedFiles(fileInput.files);
+});
+["dragenter","dragover"].forEach(evt => dropzone.addEventListener(evt, e => {
+  e.preventDefault(); dropzone.classList.add("drag");
+}));
+["dragleave","drop"].forEach(evt => dropzone.addEventListener(evt, e => {
+  e.preventDefault(); dropzone.classList.remove("drag");
+}));
+dropzone.addEventListener("drop", e => {
+  if(e.dataTransfer.files.length) setSelectedFiles(e.dataTransfer.files);
+});
+
+function setSelectedFiles(fileList){
+  selectedFiles = Array.from(fileList);
+  el("selected-filename").textContent = selectedFiles.length === 1
+    ? selectedFiles[0].name
+    : `${selectedFiles.length} files: ${selectedFiles.map(f => f.name).join(", ")}`;
+  el("ingest-btn").disabled = false;
+  el("ingest-btn").textContent = selectedFiles.length > 1 ? `Upload ${selectedFiles.length} documents` : "Upload document";
+}
+
+async function uploadOne(file){
+  const form = new FormData();
+  form.append("file", file);
+  const resp = await fetch(`${API_BASE}/documents/upload?project=${encodeURIComponent(project())}`, {
+    method: "POST",
+    body: form
+  });
+  if(!resp.ok){
+    const text = await resp.text().catch(() => "");
+    throw new Error(text || resp.statusText);
+  }
+  return resp.json();
+}
+
+el("ingest-btn").addEventListener("click", async () => {
+  if(!selectedFiles.length) return;
+  const btn = el("ingest-btn");
+  btn.disabled = true;
+  const total = selectedFiles.length;
+  const totals = { chunks_indexed:0, action_items_found:0, risks_found:0, decisions_found:0, dependencies_found:0, open_issues_found:0 };
+  const failures = [];
+  let succeeded = 0;
+
+  for(let i = 0; i < total; i++){
+    btn.textContent = total > 1 ? `Uploading ${i + 1} of ${total}…` : "Uploading…";
+    try{
+      const data = await uploadOne(selectedFiles[i]);
+      succeeded++;
+      for(const key of Object.keys(totals)) totals[key] += data[key] || 0;
+    }catch(err){
+      failures.push(`${selectedFiles[i].name}: ${err.message}`);
+    }
+  }
+
+  if(succeeded){
+    const out = el("upload-result");
+    out.style.display = "flex";
+    out.innerHTML = `
+      <div class="stat"><span class="num">${totals.chunks_indexed}</span><span class="label">Chunks indexed</span></div>
+      <div class="stat"><span class="num">${totals.action_items_found}</span><span class="label">Action items</span></div>
+      <div class="stat"><span class="num">${totals.risks_found}</span><span class="label">Risks</span></div>
+      <div class="stat"><span class="num">${totals.decisions_found}</span><span class="label">Decisions</span></div>
+      <div class="stat"><span class="num">${totals.dependencies_found}</span><span class="label">Dependencies</span></div>
+      <div class="stat"><span class="num">${totals.open_issues_found}</span><span class="label">Open issues</span></div>
+    `;
+    refreshStats();
+  }
+
+  if(failures.length){
+    showToast(`${succeeded} of ${total} uploaded. Failed: ${failures.join(" · ")}`, true);
+  }else{
+    showToast(total > 1 ? `Uploaded ${succeeded} documents` : `Uploaded "${selectedFiles[0].name}"`);
+  }
+
+  selectedFiles = [];
+  el("selected-filename").textContent = "";
+  fileInput.value = "";
+  btn.disabled = false;
+  btn.textContent = "Upload documents";
+});
+
+/* ---------- Action items ---------- */
+async function loadActionItems(){
+  const ledger = el("action-items-ledger");
+  ledger.innerHTML = `<div class="spinner-line">Loading…</div>`;
+  const params = new URLSearchParams();
+  const status = el("filter-status").value;
+  const owner = el("filter-owner").value.trim();
+  if(status) params.set("status", status);
+  if(owner) params.set("owner", owner);
+  let items;
+  try{
+    items = await api(`/projects/${encodeURIComponent(project())}/action-items?` + params.toString());
+  }catch(e){ ledger.innerHTML = ""; return; }
+
+  if(!items.length){
+    ledger.innerHTML = `<div class="empty"><strong>No action items yet</strong>Upload a document to populate this project's register.</div>`;
+    return;
+  }
+  ledger.innerHTML = items.map((it, i) => `
+    <div class="ledger-row">
+      <div class="idx">${it.id}</div>
+      <div class="task">
+        ${esc(it.task)}
+        ${it.source_snippet ? `<span class="snippet">"${esc(it.source_snippet)}"</span>` : ""}
+      </div>
+      <div class="meta">
+        <span class="owner">${esc(it.owner) || "Unassigned"}</span>
+        ${esc(it.deadline) || "No deadline"}
+      </div>
+      <div class="meta">${esc(it.priority)} priority</div>
+      <div class="status">
+        <span class="dot ${it.status}"></span>${it.status.replace("_"," ")}
+        ${it.pending_status ? `<span class="pending-flag">→ ${it.pending_status.replace("_"," ")} pending</span>` : ""}
+      </div>
+    </div>
+  `).join("");
+}
+el("apply-filters").addEventListener("click", loadActionItems);
+
+el("submit-request").addEventListener("click", async () => {
+  const id = el("req-id").value.trim();
+  if(!id){ showToast("Enter an item ID first", true); return; }
+  const newStatus = el("req-status").value;
+  const requestedBy = el("req-by").value.trim() || "you";
+  try{
+    await api(`/action-items/${id}/request-status-change`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ new_status: newStatus, requested_by: requestedBy })
+    });
+    showToast("Change requested — waiting for approval");
+    el("req-id").value = "";
+    loadActionItems();
+    refreshStats();
+  }catch(e){ /* toast already shown */ }
+});
+
+/* ---------- Risks ---------- */
+async function loadRisks(){
+  const ledger = el("risks-ledger");
+  ledger.innerHTML = `<div class="spinner-line">Loading…</div>`;
+  let risks;
+  try{
+    risks = await api(`/projects/${encodeURIComponent(project())}/risks`);
+  }catch(e){ ledger.innerHTML = ""; return; }
+  if(!risks.length){
+    ledger.innerHTML = `<div class="empty"><strong>No risks detected yet</strong>They'll appear here as documents are uploaded.</div>`;
+    return;
+  }
+  ledger.innerHTML = risks.map(r => `
+    <div class="ledger-row" style="grid-template-columns:28px 1fr auto;">
+      <div class="idx">${r.id}</div>
+      <div class="task">
+        ${esc(r.description)}
+        ${r.mitigation ? `<span class="snippet">Mitigation: ${esc(r.mitigation)}</span>` : ""}
+      </div>
+      <div class="status"><span class="dot ${r.severity}"></span>${r.severity} severity</div>
+    </div>
+  `).join("");
+}
+
+/* ---------- Register: decisions / dependencies / open issues ---------- */
+async function loadRegister(){
+  const dEl = el("decisions-list"), depEl = el("dependencies-list"), oEl = el("open-issues-list");
+  dEl.innerHTML = depEl.innerHTML = oEl.innerHTML = `<div class="spinner-line">Loading…</div>`;
+  try{
+    const [decisions, deps, issues] = await Promise.all([
+      api(`/projects/${encodeURIComponent(project())}/decisions`),
+      api(`/projects/${encodeURIComponent(project())}/dependencies`),
+      api(`/projects/${encodeURIComponent(project())}/open-issues`)
+    ]);
+    dEl.innerHTML = decisions.length ? decisions.map(d => `
+      <div class="simple-row">${esc(d.description)}<span class="who">${esc(d.decided_by) || "Unspecified"}${d.date ? " · " + esc(d.date) : ""}</span></div>
+    `).join("") : `<div class="empty">No decisions recorded yet.</div>`;
+
+    depEl.innerHTML = deps.length ? deps.map(d => `
+      <div class="simple-row">${esc(d.description)}<span class="who">Depends on: ${esc(d.depends_on) || "unspecified"}</span></div>
+    `).join("") : `<div class="empty">No dependencies recorded yet.</div>`;
+
+    oEl.innerHTML = issues.length ? issues.map(o => `
+      <div class="simple-row"><span class="dot ${o.status === 'resolved' ? 'done' : 'blocked'}" style="margin-right:6px;"></span>${esc(o.description)}<span class="who">${esc(o.raised_by) || "Unspecified"} · ${esc(o.status)}</span></div>
+    `).join("") : `<div class="empty">No open issues recorded yet.</div>`;
+  }catch(e){ /* toast already shown */ }
+}
+
+/* ---------- Q&A ---------- */
+el("qna-ask").addEventListener("click", askQuestion);
+el("qna-question").addEventListener("keydown", e => { if(e.key === "Enter") askQuestion(); });
+
+async function askQuestion(){
+  const q = el("qna-question").value.trim();
+  if(!q) return;
+  const btn = el("qna-ask");
+  btn.disabled = true; btn.textContent = "Asking…";
+  const results = el("qna-results");
+  try{
+    const data = await api(`/qna`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ project: project(), question: q })
+    });
+    const sourcesHtml = (data.sources || []).map((s, i) => `
+      <li><span class="doc">[${i+1}] ${esc(s.document)}</span> — "${esc(s.snippet)}"</li>
+    `).join("");
+    const block = document.createElement("div");
+    block.className = "answer-block";
+    block.innerHTML = `
+      <p class="q">${esc(q)}</p>
+      <div class="a">${esc(data.answer)}</div>
+      ${sourcesHtml ? `<div class="footnotes"><strong>Sources</strong><ol>${sourcesHtml}</ol></div>` : ""}
+    `;
+    results.prepend(block);
+    el("qna-question").value = "";
+  }catch(e){ /* toast already shown */ }
+  finally{ btn.disabled = false; btn.textContent = "Ask"; }
+}
+
+/* ---------- Weekly report ---------- */
+function renderMarkdown(md){
+  const lines = md.split("\n");
+  let html = "", inList = false;
+  const inline = t => esc(t)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
+  for(const raw of lines){
+    const line = raw.trim();
+    if(line.startsWith("## ")){
+      if(inList){ html += "</ul>"; inList = false; }
+      html += `<h2>${inline(line.slice(3))}</h2>`;
+    } else if(line.startsWith("# ")){
+      if(inList){ html += "</ul>"; inList = false; }
+      html += `<h2>${inline(line.slice(2))}</h2>`;
+    } else if(line.startsWith("- ") || line.startsWith("* ")){
+      if(!inList){ html += "<ul>"; inList = true; }
+      html += `<li>${inline(line.slice(2))}</li>`;
+    } else if(line === ""){
+      if(inList){ html += "</ul>"; inList = false; }
+    } else{
+      if(inList){ html += "</ul>"; inList = false; }
+      html += `<p>${inline(line)}</p>`;
+    }
+  }
+  if(inList) html += "</ul>";
+  return html;
+}
+
+let lastReportMarkdown = null;
+
+el("generate-report-btn").addEventListener("click", async () => {
+  const btn = el("generate-report-btn");
+  btn.disabled = true; btn.textContent = "Generating…";
+  const out = el("report-output");
+  el("report-actions").style.display = "none";
+  out.innerHTML = `<div class="spinner-line">Aggregating structured data and generating the report…</div>`;
+  try{
+    const data = await api(`/projects/${encodeURIComponent(project())}/weekly-report`);
+    lastReportMarkdown = data.report_markdown;
+    out.innerHTML = `
+      <div class="report-byline">${esc(project())} — generated ${new Date().toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'})}</div>
+      <div class="report-body">${renderMarkdown(data.report_markdown)}</div>
+    `;
+    el("report-actions").style.display = "flex";
+  }catch(e){ out.innerHTML = ""; }
+  finally{ btn.disabled = false; btn.textContent = "Generate report"; }
+});
+
+/* ---------- Approvals ---------- */
+async function loadApprovals(){
+  const list = el("approvals-list");
+  list.innerHTML = `<div class="spinner-line">Loading…</div>`;
+  let pending;
+  try{
+    pending = await api(`/approvals/pending`);
+  }catch(e){ list.innerHTML = ""; return; }
+  if(!pending.length){
+    list.innerHTML = `<div class="empty"><strong>Nothing pending review</strong>Proposed status changes will appear here.</div>`;
+    return;
+  }
+  list.innerHTML = pending.map(a => `
+    <div class="approval-slip" data-id="${a.id}">
+      <p class="transition">Action item <b>#${a.action_item_id}</b>: ${esc(a.old_status)} → <b>${esc(a.proposed_status)}</b></p>
+      <p class="req-meta">Requested by ${esc(a.requested_by) || "unassigned"}${a.reason ? " — " + esc(a.reason) : ""}</p>
+      <div class="actions">
+        <input type="text" value="you" class="reviewer-input" />
+        <button class="btn small approve-btn">Approve</button>
+        <button class="btn small reject reject-btn">Reject</button>
+      </div>
+    </div>
+  `).join("");
+
+  list.querySelectorAll(".approval-slip").forEach(slip => {
+    const id = slip.dataset.id;
+    const reviewer = () => slip.querySelector(".reviewer-input").value.trim() || "you";
+    slip.querySelector(".approve-btn").addEventListener("click", () => reviewApproval(id, true, reviewer()));
+    slip.querySelector(".reject-btn").addEventListener("click", () => reviewApproval(id, false, reviewer()));
+  });
+}
+
+async function reviewApproval(id, approved, reviewer){
+  try{
+    await api(`/approvals/${id}/review`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ approved, reviewer })
+    });
+    showToast(approved ? "Change approved" : "Change rejected");
+    loadApprovals();
+    refreshStats();
+  }catch(e){ /* toast already shown */ }
+}
+
+/* ---------- Switching project ---------- */
+function switchProject(name){
+  el("project-input").value = name;
+  refreshStats();
+  const active = document.querySelector("#nav-list button.active");
+  if(active) setView(active.dataset.view);
+}
+el("project-input").addEventListener("change", () => switchProject(project()));
+
+/* ---------- Projects (switch / create / delete) ---------- */
+async function loadProjectsList(){
+  const list = el("projects-list");
+  list.innerHTML = `<div class="spinner-line">Loading…</div>`;
+  let projects;
+  try{
+    projects = await api("/projects");
+  }catch(e){ list.innerHTML = ""; return; }
+
+  if(!projects.length){
+    list.innerHTML = `<div class="empty">No projects yet — upload a document to create one.</div>`;
+    return;
+  }
+  const current = project();
+  list.innerHTML = projects.map(p => `
+    <div class="simple-row project-row" data-name="${esc(p.name)}">
+      <div>
+        <div style="font-weight:500;">${esc(p.name)}${p.name === current ? ' <span class="pending-flag">current</span>' : ""}</div>
+        <span class="who">${p.document_count} document${p.document_count === 1 ? "" : "s"}${p.last_activity ? " · updated " + new Date(p.last_activity).toLocaleDateString() : ""}</span>
+      </div>
+      <div style="display:flex; gap:8px; flex:none;">
+        ${p.name === current ? "" : `<button class="btn ghost small switch-project-btn" type="button">Switch</button>`}
+        <button class="btn small reject delete-project-btn" type="button">Delete</button>
+      </div>
+    </div>
+  `).join("");
+
+  list.querySelectorAll(".project-row").forEach(row => {
+    const name = row.dataset.name;
+    const switchBtn = row.querySelector(".switch-project-btn");
+    if(switchBtn) switchBtn.addEventListener("click", () => {
+      switchProject(name);
+      closeModal("projects-modal");
+    });
+    row.querySelector(".delete-project-btn").addEventListener("click", () => openClearProjectModal(name));
+  });
+}
+
+el("open-projects-btn").addEventListener("click", () => {
+  el("new-project-name").value = "";
+  openModal("projects-modal");
+  loadProjectsList();
+});
+el("projects-close").addEventListener("click", () => closeModal("projects-modal"));
+el("new-project-create").addEventListener("click", () => {
+  const name = el("new-project-name").value.trim();
+  if(!name){ showToast("Enter a project name", true); return; }
+  switchProject(name);
+  closeModal("projects-modal");
+  showToast(`Switched to "${name}"`);
+});
+el("new-project-name").addEventListener("keydown", e => { if(e.key === "Enter") el("new-project-create").click(); });
+
+/* ---------- Clear project data ---------- */
+let clearTargetProject = null;
+function openClearProjectModal(targetProject){
+  clearTargetProject = targetProject;
+  el("clear-confirm-input").value = "";
+  el("clear-project-confirm").disabled = true;
+  el("clear-project-name-display").textContent = targetProject;
+  openModal("clear-project-modal");
+  el("clear-confirm-input").focus();
+}
+el("clear-project-btn").addEventListener("click", () => openClearProjectModal(project()));
+el("clear-project-cancel").addEventListener("click", () => closeModal("clear-project-modal"));
+el("clear-confirm-input").addEventListener("input", () => {
+  el("clear-project-confirm").disabled = el("clear-confirm-input").value.trim() !== clearTargetProject;
+});
+el("clear-project-confirm").addEventListener("click", async () => {
+  const btn = el("clear-project-confirm");
+  btn.disabled = true;
+  btn.textContent = "Deleting…";
+  try{
+    const data = await api(`/projects/${encodeURIComponent(clearTargetProject)}`, { method: "DELETE" });
+    const parts = Object.entries(data.deleted)
+      .filter(([, n]) => n > 0)
+      .map(([k, n]) => `${n} ${k.replace(/_/g, " ")}`);
+    showToast(parts.length ? `Deleted ${parts.join(", ")}` : "Nothing to delete — project was already empty");
+    closeModal("clear-project-modal");
+    if(clearTargetProject === project()){
+      refreshStats();
+      const active = document.querySelector("#nav-list button.active");
+      if(active) setView(active.dataset.view);
+    }
+    if(el("projects-modal").classList.contains("open")) loadProjectsList();
+  }catch(e){ /* toast already shown */ }
+  finally{ btn.textContent = "Delete permanently"; }
+});
+
+/* ---------- Settings ---------- */
+const SETTINGS_FIELDS = {
+  "set-provider": "llm_provider",
+  "set-groq-key": "groq_api_key",
+  "set-groq-model": "groq_model",
+  "set-gemini-key": "gemini_api_key",
+  "set-gemini-model": "gemini_model",
+  "set-ollama-url": "ollama_base_url",
+  "set-ollama-model": "ollama_model",
+  "set-top-k": "top_k",
+};
+el("open-settings-btn").addEventListener("click", async () => {
+  openModal("settings-modal");
+  try{
+    const data = await api("/settings");
+    for(const [fieldId, key] of Object.entries(SETTINGS_FIELDS)){
+      el(fieldId).value = data[key];
+    }
+  }catch(e){ closeModal("settings-modal"); }
+});
+el("settings-cancel").addEventListener("click", () => closeModal("settings-modal"));
+el("settings-save").addEventListener("click", async () => {
+  const btn = el("settings-save");
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+  const payload = {};
+  for(const [fieldId, key] of Object.entries(SETTINGS_FIELDS)){
+    const raw = el(fieldId).value;
+    payload[key] = key === "top_k" ? parseInt(raw, 10) : raw.trim();
+  }
+  try{
+    await api("/settings", {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    showToast("Settings saved");
+    closeModal("settings-modal");
+  }catch(e){ /* toast already shown */ }
+  finally{ btn.disabled = false; btn.textContent = "Save"; }
+});
+
+/* ---------- Report sharing ---------- */
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return true;
+    }catch(e2){ return false; }
+  }
+}
+el("report-copy-btn").addEventListener("click", async () => {
+  const text = el("report-output").querySelector(".report-body")?.innerText || "";
+  const ok = text && await copyText(text);
+  showToast(ok ? "Report copied to clipboard" : "Couldn't copy — try selecting the text manually", !ok);
+});
+el("report-download-btn").addEventListener("click", () => {
+  if(!lastReportMarkdown) return;
+  const blob = new Blob([lastReportMarkdown], {type:"text/markdown"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${project()}-weekly-report.md`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+el("report-print-btn").addEventListener("click", () => window.print());
+
+/* ---------- Backend connection ---------- */
+el("api-base-display").textContent = API_BASE.replace(/^https?:\/\//, "");
+el("api-base-btn").addEventListener("click", () => {
+  el("api-base-input").value = API_BASE;
+  openModal("api-base-modal");
+  el("api-base-input").focus();
+});
+el("api-base-cancel").addEventListener("click", () => closeModal("api-base-modal"));
+el("api-base-save").addEventListener("click", () => {
+  const value = el("api-base-input").value.trim();
+  if(!value){ showToast("Enter a backend URL", true); return; }
+  try{ localStorage.setItem("apiBase", value); }catch(e){}
+  window.location.href = window.location.pathname;
+});
+
+refreshStats();
+</script>
+</body>
+</html>

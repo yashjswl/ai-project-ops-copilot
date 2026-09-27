@@ -1,0 +1,19 @@
+From: Rohan Mehta
+To: Priya Nair
+Subject: Payments migration — early completion
+Date: 2026-09-17
+
+Hi Priya,
+
+Quick update — the payments service migration is done, two days ahead of the
+2026-09-19 deadline. All schema changes are deployed to staging and passing
+smoke tests. I'm marking this action item as done.
+
+One new risk to flag: the third-party payments vendor emailed saying their
+rate-limit increase approval (that our reporting service work depends on)
+might now take until end of month, which could delay the reporting service
+kickoff. Medium severity for now since reporting work hasn't started yet, but
+worth watching.
+
+Thanks,
+Rohan

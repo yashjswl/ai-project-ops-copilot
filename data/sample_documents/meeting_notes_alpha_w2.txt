@@ -1,0 +1,35 @@
+Project Alpha — Weekly Sync Notes
+Date: 2026-09-15
+Attendees: Priya Nair (PM), Rohan Mehta (Backend Lead), Sara Khan (Design), Vikram Rao (QA), Aditi Sharma (DevOps)
+
+Discussion:
+Legal finally responded to Sara's escalation — review is now scheduled for
+2026-09-18. Aditi joined to give an update on the staging environment issue,
+which was traced to a misconfigured load balancer health check.
+
+Decisions:
+- The steering committee decided to keep the original release date for now
+  and revisit if the legal review on 2026-09-18 raises major issues. Decided
+  by Priya Nair.
+
+Action items:
+- Aditi Sharma to fix the staging load balancer config by 2026-09-16, high
+  priority. Status: in progress.
+- Sara Khan to prepare the onboarding flow materials for the 2026-09-18 legal
+  review. Status: in progress.
+- Rohan Mehta's payments migration action item from last week (due
+  2026-09-19) is still open and on track.
+- Vikram Rao to resume regression testing once staging is stable, expected
+  to start 2026-09-17.
+
+Risks:
+- Medium risk: even with the legal review now scheduled, there is limited
+  buffer before the 2026-09-19 target if legal requests changes.
+
+Open issues:
+- Staging load balancer misconfiguration, raised by Aditi Sharma — in
+  progress, being fixed this week.
+
+Dependencies:
+- Vikram Rao's regression testing depends on the staging environment fix
+  being completed first.
