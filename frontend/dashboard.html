@@ -6,28 +6,28 @@
 <title>Intelligent Project Operations Assistant</title>
 <style>
   :root{
-    --ink:#1F2937;
-    --ink-2:#111827;
+    --ink:#292524;
+    --ink-2:#1C1917;
     --ink-line: rgba(255,255,255,0.1);
-    --paper:#FFFFFF;
-    --paper-2:#F1F3F6;
-    --line:#E2E5EA;
-    --text:#1F2933;
-    --text-muted:#6B7280;
-    --accent:#2563EB;
-    --accent-dark:#1D4ED8;
+    --paper:#FAF9F7;
+    --paper-2:#F0ECE6;
+    --line:#E4DFD7;
+    --text:#292524;
+    --text-muted:#78716C;
+    --accent:#B45309;
+    --accent-dark:#92400E;
     --accent-ink:#FFFFFF;
-    --status-open:#6B7280;
-    --status-progress:#D97706;
-    --status-done:#059669;
-    --status-blocked:#DC2626;
-    --sev-low:#6B7280;
-    --sev-medium:#D97706;
-    --sev-high:#DC2626;
-    --serif:Georgia, 'Times New Roman', serif;
-    --display:Georgia, 'Times New Roman', serif;
+    --status-open:#78716C;
+    --status-progress:#B45309;
+    --status-done:#15803D;
+    --status-blocked:#B91C1C;
+    --sev-low:#78716C;
+    --sev-medium:#B45309;
+    --sev-high:#B91C1C;
+    --serif:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --display:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --radius:3px;
+    --radius:4px;
   }
 
   *{ box-sizing:border-box; }
@@ -122,7 +122,7 @@
   }
   .masthead-actions .btn:hover{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.6); }
   .masthead-actions .btn.danger{ border-color:#F87171; color:#FCA5A5; }
-  .masthead-actions .btn.danger:hover{ background:rgba(220,38,38,0.18); border-color:#FCA5A5; }
+  .masthead-actions .btn.danger:hover{ background:rgba(185,28,28,0.18); border-color:#FCA5A5; }
 
   .stat-strip{
     max-width:1040px;
@@ -214,7 +214,7 @@
     text-align:center;
     transition:border-color .15s ease, background .15s ease;
   }
-  .dropzone.drag{ border-color:var(--accent); background:rgba(37,99,235,0.06); }
+  .dropzone.drag{ border-color:var(--accent); background:rgba(180,83,9,0.06); }
   .dropzone p{ margin:0 0 12px; color:var(--text-muted); font-size:14px; }
   .dropzone input[type=file]{ display:none; }
 
@@ -232,10 +232,10 @@
   .btn:hover{ background:var(--accent-dark); border-color:var(--accent-dark); }
   .btn:disabled{ opacity:0.5; cursor:not-allowed; }
   .btn.ghost{ background:transparent; color:var(--accent); }
-  .btn.ghost:hover{ background:rgba(37,99,235,0.08); }
+  .btn.ghost:hover{ background:rgba(180,83,9,0.08); }
   .btn.small{ padding:5px 12px; font-size:13px; }
   .btn.reject{ border-color:var(--sev-high); color:var(--sev-high); background:transparent; }
-  .btn.reject:hover{ background:rgba(220,38,38,0.08); }
+  .btn.reject:hover{ background:rgba(185,28,28,0.08); }
 
   .upload-result{
     margin-top:18px;
@@ -451,7 +451,7 @@
   .modal-overlay{
     position:fixed;
     inset:0;
-    background:rgba(31,41,55,0.6);
+    background:rgba(41,37,36,0.6);
     display:none;
     align-items:center;
     justify-content:center;
