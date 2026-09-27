@@ -1,0 +1,36 @@
+Project Alpha — Weekly Status Report
+Week of: 2026-09-08 to 2026-09-12
+Prepared by: Priya Nair
+
+Overall status: Yellow (at risk)
+
+Summary:
+Payments migration is progressing on schedule. Legal review of the onboarding
+flow is now the critical path item and is at risk of slipping.
+
+Completed this week:
+- Backend team finished the database schema changes for the payments service.
+- QA completed the test plan draft for the payments migration.
+
+In progress:
+- Rohan Mehta continuing the payments service migration, on track for
+  2026-09-19 deadline, medium-high confidence.
+- Sara Khan still waiting on legal team response for the onboarding flow
+  review; escalation email sent 2026-09-10 but no reply yet. This task's
+  deadline of 2026-09-12 will likely be missed.
+
+Risks this week:
+- High risk: legal review delay for onboarding flow could push the overall
+  release by up to two weeks. Owner: Sara Khan.
+- The staging environment instability reported earlier this week is still
+  unresolved and is now blocking Vikram Rao's regression testing.
+
+Decisions:
+- Priya Nair approved moving the release date discussion to next week's
+  steering committee meeting given the legal review delay.
+
+Next steps:
+- Escalate legal review blocker to the VP of Engineering if no response by
+  2026-09-15.
+- DevOps to investigate staging environment instability by 2026-09-14,
+  owner: to be assigned.

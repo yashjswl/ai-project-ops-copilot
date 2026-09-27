@@ -1,0 +1,31 @@
+# Render blueprint for the FastAPI backend.
+#
+# Deploy: https://render.com/deploy?repo=https://github.com/yashjswl/ai-project-ops-copilot
+#
+# NOTE on persistence: this defaults to Render's free plan, which has an
+# ephemeral filesystem — the SQLite DB and Chroma vector store reset on every
+# restart or redeploy. That's fine for a demo. For real persistence, upgrade
+# `plan` to a paid tier and uncomment the `disk` block below, which mounts a
+# real volume at the app's data directory.
+
+services:
+  - type: web
+    name: ai-project-ops-copilot-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.5
+      - key: LLM_PROVIDER
+        value: gemini  # swap to groq/ollama if you'd rather use one of those
+
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+    # disk:
+    #   name: data
+    #   mountPath: /opt/render/project/src/data
+    #   sizeGB: 1

@@ -1,0 +1,38 @@
+Project Alpha — Sprint Planning Meeting Notes
+Date: 2026-09-08
+Attendees: Priya Nair (PM), Rohan Mehta (Backend Lead), Sara Khan (Design), Vikram Rao (QA)
+
+Discussion:
+Priya opened by reviewing last sprint's carryover. Rohan reported the payments
+service migration is 60% complete. Sara raised a concern that the new
+onboarding flow design has not been reviewed by legal yet — this is blocking
+final sign-off and could push the release date.
+
+Decisions:
+- The team decided to postpone the mobile app redesign to Q1 next year so the
+  team can focus on the payments migration first. Decided by Priya Nair.
+- We will use PostgreSQL instead of MongoDB for the new reporting service,
+  decided by Rohan Mehta after the architecture review on 2026-09-05.
+
+Action items:
+- Rohan Mehta to finish the payments service migration by 2026-09-19. High priority.
+- Sara Khan to get the onboarding flow reviewed by the legal team by 2026-09-12.
+  This is currently blocked pending legal's availability.
+- Vikram Rao to write regression test cases for the payments migration by
+  2026-09-17, medium priority.
+- Priya Nair to update the stakeholder roadmap doc by end of week (2026-09-12).
+
+Risks:
+- High risk: if legal review of the onboarding flow slips past 2026-09-15, the
+  release date will need to move. Mitigation: Sara to escalate to legal team
+  lead this week.
+- Medium risk: the payments migration depends on a third-party API rate limit
+  increase that has not been approved yet by the vendor.
+
+Open issues:
+- Vikram raised that the staging environment has been intermittently down
+  since Monday, raised by Vikram Rao, currently unresolved.
+
+Dependencies:
+- The reporting service work depends on the payments migration being complete
+  first, since it reads from the new payments schema.
