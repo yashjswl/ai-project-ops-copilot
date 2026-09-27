@@ -6,11 +6,12 @@ decisions, dependencies, and open issues, each traceable back to the exact
 line it came from. Every status change goes through a human approval step
 before it's treated as final.
 
-**[Try the live demo →](https://frontend-six-pi-51.vercel.app/)**
+## Live demo
 
-The backend is on Render's free tier, so the first request after a while can
-take 30–60 seconds to wake up, and uploaded data resets on redeploy, good
-enough to click around, not somewhere to keep real project data.
+- Application: https://ai-project-ops-copilot.vercel.app/
+- API: https://ai-project-ops-copilot-api.onrender.com/health
+
+The backend is hosted on Render's free tier, which spins down after inactivity, so the first request after a period of idleness can take up to a minute while it restarts.
 
 ## Why
 
@@ -41,18 +42,15 @@ documents (.txt / .pdf / .docx)
                                                                      not raw notes)
 ```
 
-Status changes never write directly, a proposed change sits in an approvals
-queue until a human accepts or rejects it.
 
 ## Stack
 
 - **Backend**, FastAPI, SQLAlchemy over SQLite, ChromaDB for retrieval (its
   bundled ONNX embedding model, so no GPU or paid embedding API needed).
 - **LLM**, swappable at runtime between Groq, Gemini, and Ollama
-  (`backend/llm_client.py`); Groq is the default because it's free and fast.
+  (`backend/llm_client.py`); Gemini is the default because it's free and fast.
 - **Frontend**, a single static HTML file (`frontend/dashboard.html`), no
-  build step, no framework. A Streamlit app (`frontend/app.py`) also exists
-  as a lighter alternative UI.
+  build step, no framework.
 
 ## Features
 
