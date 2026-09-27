@@ -4,32 +4,29 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Intelligent Project Operations Assistant</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#151A22;
-    --ink-2:#1E2530;
-    --ink-line: rgba(237,232,220,0.14);
-    --paper:#EDE8DC;
-    --paper-2:#E4DECE;
-    --line:#C9C2AE;
-    --text:#23262B;
-    --text-muted:#6B655A;
-    --accent:#8C5A2E;
-    --accent-dark:#6E4522;
-    --accent-ink:#F4EFE4;
+    --ink:#1F2937;
+    --ink-2:#111827;
+    --ink-line: rgba(255,255,255,0.1);
+    --paper:#F7F8FA;
+    --paper-2:#ECEEF1;
+    --line:#DCE0E5;
+    --text:#1F2933;
+    --text-muted:#6B7280;
+    --accent:#2563EB;
+    --accent-dark:#1D4ED8;
+    --accent-ink:#FFFFFF;
     --status-open:#6B7280;
-    --status-progress:#B8860B;
-    --status-done:#2F6F4E;
-    --status-blocked:#8B2E2E;
+    --status-progress:#D97706;
+    --status-done:#059669;
+    --status-blocked:#DC2626;
     --sev-low:#6B7280;
-    --sev-medium:#B8860B;
-    --sev-high:#8B2E2E;
-    --serif:'Source Serif 4', Georgia, 'Times New Roman', serif;
-    --display:'Playfair Display', Georgia, 'Times New Roman', serif;
-    --sans:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --sev-medium:#D97706;
+    --sev-high:#DC2626;
+    --serif:Georgia, 'Times New Roman', serif;
+    --display:Georgia, 'Times New Roman', serif;
+    --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --radius:3px;
   }
 
@@ -76,7 +73,7 @@
     margin:8px 0 0;
     font-size:14px;
     line-height:1.5;
-    color:rgba(244,239,228,0.62);
+    color:rgba(255,255,255,0.62);
     max-width:48ch;
   }
   .project-field{
@@ -87,12 +84,12 @@
   }
   .project-field label{
     font-size:11px;
-    color:rgba(244,239,228,0.55);
+    color:rgba(255,255,255,0.55);
   }
   .project-field input{
     background:transparent;
     border:none;
-    border-bottom:1px solid rgba(244,239,228,0.4);
+    border-bottom:1px solid rgba(255,255,255,0.4);
     color:var(--accent-ink);
     font-family:var(--serif);
     font-size:18px;
@@ -111,14 +108,14 @@
   }
   .masthead-actions .btn{
     background:transparent;
-    border-color:rgba(244,239,228,0.35);
+    border-color:rgba(255,255,255,0.35);
     color:var(--accent-ink);
     padding:6px 12px;
     font-size:13px;
   }
-  .masthead-actions .btn:hover{ background:rgba(244,239,228,0.1); border-color:rgba(244,239,228,0.6); }
-  .masthead-actions .btn.danger{ border-color:#C97A6D; color:#E3A79B; }
-  .masthead-actions .btn.danger:hover{ background:rgba(139,46,46,0.18); border-color:#E3A79B; }
+  .masthead-actions .btn:hover{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.6); }
+  .masthead-actions .btn.danger{ border-color:#F87171; color:#FCA5A5; }
+  .masthead-actions .btn.danger:hover{ background:rgba(220,38,38,0.18); border-color:#FCA5A5; }
 
   .stat-strip{
     max-width:1040px;
@@ -143,7 +140,7 @@
   }
   .stat .label{
     font-size:12px;
-    color:rgba(244,239,228,0.55);
+    color:rgba(255,255,255,0.55);
   }
 
   /* ---------- Nav ---------- */
@@ -210,7 +207,7 @@
     text-align:center;
     transition:border-color .15s ease, background .15s ease;
   }
-  .dropzone.drag{ border-color:var(--accent); background:rgba(140,90,46,0.06); }
+  .dropzone.drag{ border-color:var(--accent); background:rgba(37,99,235,0.06); }
   .dropzone p{ margin:0 0 12px; color:var(--text-muted); font-size:14px; }
   .dropzone input[type=file]{ display:none; }
 
@@ -228,10 +225,10 @@
   .btn:hover{ background:var(--accent-dark); border-color:var(--accent-dark); }
   .btn:disabled{ opacity:0.5; cursor:not-allowed; }
   .btn.ghost{ background:transparent; color:var(--accent); }
-  .btn.ghost:hover{ background:rgba(140,90,46,0.08); }
+  .btn.ghost:hover{ background:rgba(37,99,235,0.08); }
   .btn.small{ padding:5px 12px; font-size:13px; }
   .btn.reject{ border-color:var(--sev-high); color:var(--sev-high); background:transparent; }
-  .btn.reject:hover{ background:rgba(139,46,46,0.08); }
+  .btn.reject:hover{ background:rgba(220,38,38,0.08); }
 
   .upload-result{
     margin-top:18px;
@@ -405,11 +402,49 @@
 
   .spinner-line{ font-size:13px; color:var(--text-muted); padding:20px 0; }
 
+  /* ---------- Boot overlay ---------- */
+  .boot-overlay{
+    position:fixed;
+    inset:0;
+    background:var(--ink);
+    color:var(--accent-ink);
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    z-index:200;
+    padding:20px;
+    text-align:center;
+  }
+  .boot-overlay.show{ display:flex; }
+  .spinner-ring{
+    width:36px;
+    height:36px;
+    border:3px solid rgba(255,255,255,0.2);
+    border-top-color:var(--accent-ink);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .boot-overlay .boot-text{
+    font-family:var(--serif);
+    font-size:17px;
+    font-weight:600;
+    margin:0;
+  }
+  .boot-overlay .boot-subtext{
+    font-size:13px;
+    color:rgba(255,255,255,0.55);
+    max-width:340px;
+    margin:0;
+  }
+
   /* ---------- Modals ---------- */
   .modal-overlay{
     position:fixed;
     inset:0;
-    background:rgba(21,26,34,0.6);
+    background:rgba(31,41,55,0.6);
     display:none;
     align-items:center;
     justify-content:center;
@@ -475,7 +510,7 @@
   .api-base-btn:hover{ opacity:1; color:var(--accent); }
 
   @media print{
-    header.masthead, nav.section-nav, .toast, .report-actions, #generate-report-btn, footer.site-footer{ display:none !important; }
+    header.masthead, nav.section-nav, .toast, .report-actions, #generate-report-btn, footer.site-footer, .boot-overlay{ display:none !important; }
     body{ background:#fff; }
     main{ padding:0; max-width:none; }
     .report-body{ border-top:none; padding-top:0; }
@@ -483,6 +518,12 @@
 </style>
 </head>
 <body>
+
+<div class="boot-overlay" id="boot-overlay">
+  <div class="spinner-ring"></div>
+  <p class="boot-text">Starting backend…</p>
+  <p class="boot-subtext">The free hosting tier spins down when idle, so the first request can take up to a minute to wake it back up.</p>
+</div>
 
 <header class="masthead">
   <div class="masthead-top">
@@ -761,10 +802,13 @@
 
 <script>
 /* API_BASE resolution order: ?api= query param (persisted), then a value
-   saved earlier via the footer's connection dialog, then localhost for
-   local development. This lets a statically-hosted build of this page
-   point at whatever backend URL it's given, e.g.
-   https://your-app.pages.dev/?api=https://your-backend.onrender.com */
+   saved earlier via the footer's connection dialog, then a default that
+   depends on where this page itself is being served from: localhost when
+   developing locally, otherwise the hosted Render backend, so the deployed
+   demo works out of the box without needing a query param. This lets a
+   statically-hosted build of this page point at whatever backend URL it's
+   given, e.g. https://your-app.pages.dev/?api=https://your-backend.onrender.com */
+const RENDER_API_BASE = "https://ai-project-ops-copilot-api.onrender.com";
 function resolveApiBase(){
   const fromQuery = new URLSearchParams(window.location.search).get("api");
   if(fromQuery){
@@ -775,7 +819,8 @@ function resolveApiBase(){
     const stored = localStorage.getItem("apiBase");
     if(stored) return stored.replace(/\/$/, "");
   }catch(e){}
-  return "http://localhost:8000";
+  const isLocal = ["localhost", "127.0.0.1", ""].includes(window.location.hostname);
+  return isLocal ? "http://localhost:8000" : RENDER_API_BASE;
 }
 let API_BASE = resolveApiBase();
 
@@ -1370,7 +1415,17 @@ el("api-base-save").addEventListener("click", () => {
   window.location.href = window.location.pathname;
 });
 
-refreshStats();
+/* ---------- Boot sequence ---------- */
+async function bootConnect(){
+  const showTimer = setTimeout(() => el("boot-overlay").classList.add("show"), 400);
+  try{
+    await fetch(API_BASE + "/health");
+  }catch(e){ /* connection status is reported by the normal api() error toast below */ }
+  clearTimeout(showTimer);
+  el("boot-overlay").classList.remove("show");
+  refreshStats();
+}
+bootConnect();
 </script>
 </body>
 </html>
