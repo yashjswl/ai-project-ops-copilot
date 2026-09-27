@@ -6,7 +6,7 @@ decisions, dependencies, and open issues, each traceable back to the exact
 line it came from. Every status change goes through a human approval step
 before it's treated as final.
 
-**[Try the live demo →](https://frontend-six-pi-51.vercel.app/dashboard.html?api=https://ai-project-ops-copilot-api.onrender.com)**
+**[Try the live demo →](https://frontend-six-pi-51.vercel.app/)**
 
 The backend is on Render's free tier, so the first request after a while can
 take 30–60 seconds to wake up, and uploaded data resets on redeploy, good
