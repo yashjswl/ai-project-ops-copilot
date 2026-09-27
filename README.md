@@ -162,4 +162,4 @@ data/sample_documents/  a few files to try the pipeline with
 
 ---
 
-Built by [Yashasvi Jaiswal](https://github.com/yashjswl).
+From [Yashasvi Jaiswal](https://www.linkedin.com/in/yashjswl/).
