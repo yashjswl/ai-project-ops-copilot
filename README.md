@@ -158,6 +158,12 @@ data/sample_documents/  a few files to try the pipeline with
 - The chunker is a plain sliding window, not markdown- or section-aware.
 - No auth, anyone who can reach the API can read and write everything.
 
+## Contact
+
+From Yashasvi Jaiswal. 
+
+LinkedIn: [linkedin.com/in/yashjswl](https://www.linkedin.com/in/yashjswl/)
+
 ---
 
-From [Yashasvi Jaiswal](https://www.linkedin.com/in/yashjswl/).
+&copy; 2026 Yashasvi Jaiswal. All rights reserved.
