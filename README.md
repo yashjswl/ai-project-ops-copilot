@@ -13,6 +13,30 @@ before it's treated as final.
 
 The backend is hosted on Render's free tier, which spins down after inactivity, so the first request after a period of idleness can take up to a minute while it restarts.
 
+## Screenshots
+
+![Action items extracted from the sample project documents](docs/screenshots/action-items.png)
+
+Action items pulled from four sample documents (two sets of meeting notes, a
+status report, and an email). Each one carries its owner, deadline, priority,
+and status, plus the line it was extracted from. The "done pending" tag marks a
+status change that is waiting on a human.
+
+![A question answered with citations to the source documents](docs/screenshots/ask.png)
+
+Questions are answered from the uploaded documents, with numbered citations
+back to the files they came from.
+
+![A weekly status report generated from the structured data](docs/screenshots/weekly-report.png)
+
+The weekly report is written from the structured data above, and can be
+copied, downloaded as markdown, or printed to PDF.
+
+![The approvals queue with two pending status changes](docs/screenshots/approvals.png)
+
+Proposed status changes wait in the approvals queue until someone approves or
+rejects them.
+
 ## Why
 
 Most "AI project assistant" demos summarize documents into a paragraph you
