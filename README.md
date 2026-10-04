@@ -8,7 +8,7 @@ before it's treated as final.
 
 ## Live demo
 
-- Application: https://ai-project-ops-copilot.vercel.app/
+- Application: https://p2.yashjswl.com
 - API: https://ai-project-ops-copilot-api.onrender.com/health
 
 The backend is hosted on Render's free tier, which spins down after inactivity, so the first request after a period of idleness can take up to a minute while it restarts.
@@ -190,4 +190,6 @@ LinkedIn: [linkedin.com/in/yashjswl](https://www.linkedin.com/in/yashjswl/)
 
 ---
 
-&copy; 2026 Yashasvi Jaiswal. All rights reserved.
+&copy; 2026 [Yashasvi Jaiswal](https://yashjswl.com). All rights reserved.
+
+Email: [hello@yashjswl.com](mailto:hello@yashjswl.com)
