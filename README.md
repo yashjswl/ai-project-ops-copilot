@@ -184,12 +184,12 @@ data/sample_documents/  a few files to try the pipeline with
 
 ## Contact
 
-From Yashasvi Jaiswal. 
+From [Yashasvi Jaiswal](https://yashjswl.com). 
 
 LinkedIn: [linkedin.com/in/yashjswl](https://www.linkedin.com/in/yashjswl/)
 
+Email: [hello@yashjswl.com](mailto:hello@yashjswl.com)
+
 ---
 
-&copy; 2026 [Yashasvi Jaiswal](https://yashjswl.com). All rights reserved.
-
-Email: [hello@yashjswl.com](mailto:hello@yashjswl.com)
+&copy; 2026 Yashasvi Jaiswal. All rights reserved.
